@@ -1,0 +1,106 @@
+#Strart Vagrant configure
+Vagrant.configure("2") do |config|
+
+  #Specify ubuntu 20 for installation
+      config.vm.box = "bento/ubuntu-20.04"
+  #Apply the configuration for the first node 'router'    
+      config.vm.define "router" do |router|
+        router.vm.provider "virtualbox" do |vb_router|
+        end
+    
+        router.vm.hostname = "router"
+  #Specify a static address for the first interface      
+        router.vm.network "private_network", ip: "172.16.0.1"
+  #Upload a netplan cfg from host to VM
+        router.vm.provision "file", 
+          source: "~/vagrant/vagranthillel/.provision/router.yaml", 
+          destination: "/tmp/router.yaml"
+        router.vm.provision "shell", inline: <<-SHELL
+          sudo apt update
+  #Allow forwarding for nodes
+          sudo echo 'net.ipv4.ip_forward=1' > /etc/sysctl.conf
+          mv /tmp/router.yaml /etc/netplan/router.yaml
+  #Remove a default cfg who created vagrant
+          sudo rm /etc/netplan/50-vagrant.yaml
+          sudo netplan apply
+        SHELL
+        end
+  
+  
+      config.vm.define "vmA" do |vmA| 
+        
+        vmA.vm.hostname = "vmA"
+        vmA.vm.network "private_network", ip: "172.16.0.2"
+        vmA.vm.network "private_network", ip: "192.168.100.1"
+        vmA.vm.provision "file", 
+          source: "~/vagrant/vagranthillel/.provision/vma.yaml", 
+          destination: "/tmp/vma.yaml"
+  #Upload nginx configuration from host to VM (It's nginx reverse proxy)
+        vmA.vm.provision "file",
+          source: "~/vagrant/vagranthillel/.provision/nginxconfig.io-example.com.tar.gz",
+          destination: "/tmp/nginxconfig.io-example.com.tar.gz"
+        vmA.vm.provision "shell", inline: <<-SHELL
+            sudo apt update
+            sudo echo 'net.ipv4.ip_forward=1' > /etc/sysctl.conf
+            mv /tmp/vma.yaml /etc/netplan/vma.yaml
+            sudo rm /etc/netplan/50-vagrant.yaml
+            sudo netplan apply
+  #Start install nginx, then move our zip config to nginx derictory, then we are create backup of default nginx-cfg, and unpacking our nginx reverse proxy
+            sudo apt install nginx -y 
+            cd /etc/nginx/ && sudo mv /tmp/nginxconfig.io-example.com.tar.gz /etc/nginx/nginxconfig.io-example.com.tar.gz && sudo tar -czvf nginx_$(date +'%F_%H-%M-%S').tar.gz nginx.conf sites-available/ sites-enabled/ && sudo tar -xzvf nginxconfig.io-example.com.tar.gz | xargs chmod 0644
+            sudo rm -rf /etc/nginx/sites-available/default && sudo rm -rf /etc/nginx/sites-enabled/default
+            sudo systemctl restart nginx
+          SHELL
+          end
+  
+         
+      config.vm.define "vmB" do |vmB|
+      
+        vmB.vm.hostname = "vmB"
+        vmB.vm.network "private_network", ip: "192.168.100.2"
+        vmB.vm.network "private_network", ip: "192.168.101.1"
+  #Upload our script from host to VM and started
+        vmB.vm.provision :shell, :path => ".provision/mysql.sh"
+        vmB.vm.provision "file", 
+          source: "~/vagrant/vagranthillel/.provision/vmb.yaml", 
+          destination: "/tmp/vmb.yaml"
+        vmB.vm.provision "shell", inline: <<-SHELL
+            sudo apt update
+            sudo echo 'net.ipv4.ip_forward=1' > /etc/sysctl.conf
+            mv /tmp/vmb.yaml /etc/netplan/vmb.yaml
+            sudo rm /etc/netplan/50-vagrant.yaml
+            sudo netplan apply
+          SHELL
+          end     
+      
+      config.vm.define "vmC" do |vmC|
+      
+        vmC.vm.hostname = "vmC"
+        vmC.vm.network "private_network", ip: "192.168.100.3"
+        vmC.vm.network "private_network", ip: "192.168.102.1"
+  #Upload our script from host to VM and started
+        vmC.vm.provision :shell, :path => ".provision/apachephp.sh"
+        vmC.vm.provision "file", 
+          source: "~/vagrant/vagranthillel/.provision/vmc.yaml", 
+          destination: "/tmp/vmc.yaml"
+  #Upload our wp-config from host to VM for Wordpress
+        vmC.vm.provision "file", 
+          source: "~/vagrant/vagranthillel/.provision/wp-config.php", 
+          destination: "/tmp/wp-config.php"
+        vmC.vm.provision "shell", inline: <<-SHELL
+            sudo apt update
+            sudo echo 'net.ipv4.ip_forward=1' > /etc/sysctl.conf
+            mv /tmp/vmc.yaml /etc/netplan/vmc.yaml
+            mv /tmp/wp-config.php /var/www/html/example.com/wp-config.php
+            sudo rm /etc/netplan/50-vagrant.yaml
+            sudo netplan apply
+  #Added configuration in default apache conf via command sed.
+            sudo sed -i "1d" /etc/apache2/sites-available/000-default.conf && sudo sed -i '1 a<VirtualHost 192.168.102.1:80>' /etc/apache2/sites-available/000-default.conf
+            sudo sed -i 's/#ServerName www.example.com/ServerName example.com/' /etc/apache2/sites-available/000-default.conf 
+            sudo sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/html/example.com|' /etc/apache2/sites-available/000-default.conf
+            sudo sed -i '9 aServerAlias www.example.com' /etc/apache2/sites-available/000-default.conf
+            sudo sed -i '10 aDirectoryIndex index.html index.php' /etc/apache2/sites-available/000-default.conf
+            sudo systemctl restart apache2.service
+          SHELL
+          end
+    end
