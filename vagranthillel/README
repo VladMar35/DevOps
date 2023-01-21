@@ -1,0 +1,49 @@
+1) Run four virtual machines with the Ubuntu OS using Vagrant
+
+2) Each machine must have two network interfaces with static addresses from defined networks
+
+VM A
+
+172.16.0.0/24
+
+192.168.100.0/24
+
+VM B
+
+192.168.101.0/24
+
+192.168.100.0/24
+
+VM C
+
+192.168.100.0/24
+
+192.168.102.0/24
+
+
+
+3) Fulfill the following conditions for virtual machines
+
+You can curl WordPress by mysyte.local
+
+from IP in 172.16.0.0/24 network added to /etc/hosts
+
+VM A
+
+- Internet access
+
+- can curl WordPress from 102 network
+
+* Nginx proxy for WordPress
+
+VM B
+
+- No Intenet access
+
+- Mysql on 101 network
+
+VM C
+
+Internet access
+
+Apache with WordPress and DB from B on 102 network
