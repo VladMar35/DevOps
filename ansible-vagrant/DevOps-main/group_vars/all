@@ -1,4 +1,0 @@
-db_user: wordpressuser
-db_pass: strongpassword
-db_name: wordpress
-db_host: 192.168.101.1
