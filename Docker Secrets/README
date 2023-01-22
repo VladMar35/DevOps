@@ -1,0 +1,5 @@
+📝 Task:
+For the next docker compose project, you need to implement a solution that would allow you to transfer credentials 
+(login/password) safely — without specifying them as text in the compose file.
+
+Because passwords should not be stored in plain text unencrypted files.
