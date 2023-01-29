@@ -9,7 +9,7 @@ docker build -t fe-builder .
 ## Step №3. Run and push to aws S3
 
 ```bash
-docker run -it -v "ts-redux-react-realworld-example-app":"/app" \
+docker run -it -v "project_frontend/ts-redux-react-realworld-example-app":"/app" \
 -e AWS_ACCESS_KEY_ID='USE YOUR KEY' \
 -e AWS_SECRET_ACCESS_KEY='USE YOUR SECRET KEY' \
 -e AWS_DEFAULT_REGION='CHOOSE ANY REGIONS' \
