@@ -24,6 +24,5 @@ fe-builder \
 
 ## Step №6. Add Default root object(index.html) in your "Distribution"
 
-## Resault
-[Frontend](https://d262zqwvlu3mjk.cloudfront.net/#/)
+## Resault :[Frontend](https://d262zqwvlu3mjk.cloudfront.net/#/)
 
