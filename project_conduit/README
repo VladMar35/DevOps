@@ -1,0 +1,8 @@
+# Step №1. Build Dockerfile:
+
+```bash
+docker build -t fe-builder .
+```
+
+
+
