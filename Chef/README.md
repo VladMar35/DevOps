@@ -1,1 +1,1 @@
-##Install Chef on Ubuntu 20.04
+#Install Chef on Ubuntu 20.04
