@@ -59,7 +59,6 @@ knife supermarket install mysql
 mkdir /home/vagrant/chef-repo/cookbooks/mysql/recipes && cd /home/vagrant/chef-repo/cookbooks/mysql/recipes
 wget https://raw.githubusercontent.com/vvmarchenko/DevOps/main/Chef/recipes/default.rb
 sudo sed -i "10 adepends 'mysql'" /home/vagrant/chef-repo/cookbooks/mysql/metadata.rb
-sudo sed -i "10 adepends 'mysql'" /home/vagrant/chef-repo/cookbooks/mysql/metadata.json
 
 #Add the recipe to the run list for the node.
 knife node run_list add node 'recipe[mysql::default]'
