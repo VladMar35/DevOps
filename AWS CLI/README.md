@@ -225,7 +225,7 @@ aws ec2 describe-subnets --filters "Name=vpc-id,Values=vpc-0552de9052ace532f" "N
 ```
 # Last task.
 
-##Describe the latest AMI with parameters: 
+## Describe the latest AMI with parameters: 
 - OS: Amazon Linux 2 
 - Owner — amazon
 - Architecture — x86_64 
