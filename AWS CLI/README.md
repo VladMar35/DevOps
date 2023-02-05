@@ -1,12 +1,12 @@
-### First task.
+# First task.
 
 ## Step 1 - Create VPC
 
-# command:
+### command:
 ```
 aws ec2 create-vpc --cidr-block 10.0.0.0/16
 ```
-# output:
+### output:
 ```
 {
     "Vpc": {
@@ -31,20 +31,20 @@ aws ec2 create-vpc --cidr-block 10.0.0.0/16
 }
 ```
 
-# create tag:
+### create tag:
 ```
 aws ec2 create-tags --resources vpc-0552de9052ace532f --tags Key=Name,Value=hillel-vpc
 ```
 
 ## Step 2 - Create public and private subnets
 
-# command for public:
+### command for public:
 
 ```
 aws ec2 create-subnet --vpc-id vpc-0552de9052ace532f --cidr-block 10.0.1.0/24
 ```
 
-# output:
+### output:
 ```
 {
     "Subnet": {
@@ -72,18 +72,18 @@ aws ec2 create-subnet --vpc-id vpc-0552de9052ace532f --cidr-block 10.0.1.0/24
 }
 ```
 
-# create tag for public:
+### create tag for public:
 ```
 aws ec2 create-tags --resources subnet-04413154f90d41daa --tags Key=Name,Value=public
 ```
 
-# command for private:
+### command for private:
 
 ```
 aws ec2 create-subnet --vpc-id vpc-0552de9052ace532f --cidr-block 10.0.2.0/24
 ```
 
-#output:
+### output:
 ```
 {
     "Subnet": {
@@ -110,18 +110,18 @@ aws ec2 create-subnet --vpc-id vpc-0552de9052ace532f --cidr-block 10.0.2.0/24
     }
 }
 ```
-# create tag for private:
+### create tag for private:
 ```
 aws ec2 create-tags --resources subnet-00fe67de7b90d152f --tags Key=Name,Value=private
 ```
 
 ## Step 3 - Create internet gateway for the VPC
 
-# command:
+### command:
 ```
 aws ec2 create-internet-gateway
 ```
-# output
+### output
 ```
 {
     "InternetGateway": {
@@ -133,23 +133,23 @@ aws ec2 create-internet-gateway
 }
 ```
 
-# create tag:
+### create tag:
 ```
 aws ec2 create-tags --resources igw-0358b909e88eabd7c --tags Key=Name,Value=igw-hillel
 ```
 
-# attach igw to the VPC:
+### attach igw to the VPC:
 ```
 aws ec2 attach-internet-gateway --internet-gateway-id igw-0358b909e88eabd7c --vpc-id vpc-0552de9052ace532f
 ```
 
 ## Step 6 - Create a route table
 
-# command:
+### command:
 ```
 aws ec2 create-route-table --vpc-id vpc-0552de9052ace532f
 ```
-# output:
+### output:
 ```
 {
     "RouteTable": {
@@ -170,28 +170,28 @@ aws ec2 create-route-table --vpc-id vpc-0552de9052ace532f
     }
 }
 ```
-# create tag:
+### create tag:
 ```
 aws ec2 create-tags --resources rtb-0aabd3cf0d84433d2 --tags Key=Name,Value=Public
 ```
 
 ## Step 7 - Create routes
 
-# command:
+### command:
 ```
 aws ec2 create-route --route-table-id rtb-0aabd3cf0d84433d2 --destination-cidr-block 0.0.0.0/0 --gateway-id igw-0358b909e88eabd7c
 ```
-# output:
+### output:
 ```
 {
     "Return": true
 }
 ```
-# associate route table to subnet:
+### associate route table to subnet:
 ```
 aws ec2 associate-route-table --route-table-id rtb-0aabd3cf0d84433d2 --subnet-id subnet-04413154f90d41daa
 ```
-# output:
+### output:
 ```
 {
     "AssociationId": "rtbassoc-0ee1962ed5f552594",
@@ -202,13 +202,13 @@ aws ec2 associate-route-table --route-table-id rtb-0aabd3cf0d84433d2 --subnet-id
 ```
 
 
-### Second task.
+# Second task.
 ## Discribe the Cidr Block of all subnets with the name (tag) private in your VPC.
-# command:
+### command:
 ```
 aws ec2 describe-subnets --filters "Name=vpc-id,Values=vpc-0552de9052ace532f" "Name=tag:Name,Values=private" --query "Subnets[*].{Tag:Tags,ID:SubnetId,CIDR:CidrBlock}"
 ```
-# output:
+### output:
 ```
 [
     {
