@@ -223,3 +223,25 @@ aws ec2 describe-subnets --filters "Name=vpc-id,Values=vpc-0552de9052ace532f" "N
     }
 ]
 ```
+# Last task.
+
+##Describe the latest AMI with parameters: 
+- OS: Amazon Linux 2 
+- Owner — amazon
+- Architecture — x86_64 
+- Region — us-west-2
+
+### command:
+```
+aws ec2 describe-images --owners amazon --filters 'Name=description,Values=Amazon Linux 2 *' 'Name=architecture,Values=x86_64' --query 'sort_by(Images, &CreationDate)[-1].{ID:ImageId,Architecture:Architecture,Owner:ImageOwnerAlias,OS:Description}' --region us-west-2
+```
+
+### output:
+```
+{
+    "ID": "ami-0720d173d2dc9052b",
+    "Architecture": "x86_64",
+    "Owner": "amazon",
+    "OS": "Amazon Linux 2 SELinux Enforcing AMI 2.0.20230119.1 x86_64 Minimal HVM gp2"
+}
+```
