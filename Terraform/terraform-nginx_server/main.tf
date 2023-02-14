@@ -23,9 +23,9 @@ resource "aws_vpc" "vpc_nginx" {
   enable_dns_support   = "true"
   enable_dns_hostnames = "true"
   instance_tenancy     = "default"
-tags = {
-    Name = "vpc_nginx"
-  }
+  tags = {
+      Name = "vpc_nginx"
+    }
 }
 
 #Create a public subnet
@@ -48,9 +48,9 @@ resource "aws_route_table" "public_rt" {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.prod_igw.id
   }
-tags = {
-    Name = "public_rt"
-  }
+  tags = {
+      Name = "public_rt"
+    }
 }
 resource "aws_route_table_association" "public_1" {
   subnet_id      = aws_subnet.public_1.id
@@ -89,8 +89,8 @@ resource "aws_security_group" "demo_sg" {
 resource "aws_instance" "nginx_server" {
   ami           = "ami-052efd3df9dad4825"
   instance_type = "t2.micro"
-tags = {
-    Name = "nginx_server"
+  tags = {
+      Name = "nginx_server"
   }
   subnet_id = aws_subnet.public_1.id
   vpc_security_group_ids = ["${aws_security_group.demo_sg.id}"]
