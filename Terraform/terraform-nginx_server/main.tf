@@ -18,7 +18,7 @@ provider "aws" {
 
 
 #Creat VPC
-resource "aws_vpc" "vpc-nginx" {
+resource "aws_vpc" "vpc_nginx" {
   cidr_block           = "10.0.0.0/16"
   enable_dns_support   = "true"
   enable_dns_hostnames = "true"
@@ -29,39 +29,39 @@ tags = {
 }
 
 #Create a public subnet
-resource "aws_subnet" "public-1" {
-  vpc_id                  = aws_vpc.vpc-nginx.id 
+resource "aws_subnet" "public_1" {
+  vpc_id                  = aws_vpc.vpc_nginx.id 
   cidr_block              = "10.0.1.0/24"
   map_public_ip_on_launch = "true" 
   availability_zone       = "us-east-1a"
 }
 
 #Create IGW
-resource "aws_internet_gateway" "prod-igw" {
-  vpc_id = aws_vpc.vpc-nginx.id
+resource "aws_internet_gateway" "prod_igw" {
+  vpc_id = aws_vpc.vpc_nginx.id
 }
 
 #Create a route table
-resource "aws_route_table" "public-rt" {
-  vpc_id = aws_vpc.vpc-nginx.id
+resource "aws_route_table" "public_rt" {
+  vpc_id = aws_vpc.vpc_nginx.id
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.prod-igw.id
+    gateway_id = aws_internet_gateway.prod_igw.id
   }
 tags = {
-    Name = "public-rt"
+    Name = "public_rt"
   }
 }
-resource "aws_route_table_association" "public-1" {
-  subnet_id      = aws_subnet.public-1.id
-  route_table_id = aws_route_table.public-rt.id
+resource "aws_route_table_association" "public_1" {
+  subnet_id      = aws_subnet.public_1.id
+  route_table_id = aws_route_table.public_rt.id
 }
 
 #Create security group
 resource "aws_security_group" "demo_sg" {
   name        = "demo_sg"
   description = "allow ssh on 22 & http on port 80"
-  vpc_id      = aws_vpc.vpc-nginx.id
+  vpc_id      = aws_vpc.vpc_nginx.id
 
   ingress {
     from_port        = 22
@@ -92,7 +92,7 @@ resource "aws_instance" "nginx_server" {
 tags = {
     Name = "nginx_server"
   }
-  subnet_id = aws_subnet.public-1.id
+  subnet_id = aws_subnet.public_1.id
   vpc_security_group_ids = ["${aws_security_group.demo_sg.id}"]
   key_name               = var.key_name
   user_data              = file("nginx.tpl")
